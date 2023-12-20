@@ -168,4 +168,4 @@ builder.defineStreamHandler(async function (args) {
 
 serveHTTP(builder.getInterface(), { port: process.env.PORT || 7000 })
 
-
+publishToCentral("https://bf17379232ce-animecix-stremio-addon.baby-beamup.club/");

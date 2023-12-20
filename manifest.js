@@ -1,7 +1,7 @@
 const manifest = {
 
     id: 'org.animecix',
-    version: '1.0.2',
+    version: '1.0.3',
     
     name: 'Animecix',
     description:"Animecix'den türkçe animeleri stremionuza getirir",
