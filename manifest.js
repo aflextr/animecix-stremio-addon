@@ -1,6 +1,6 @@
 const manifest = {
 
-    id: 'org.animecix',
+    id: 'org.animecix-stremio-addon',
     version: '1.0.3',
     
     name: 'Animecix',
