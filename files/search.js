@@ -3,11 +3,12 @@ const header = require("../header");
 require("dotenv").config({ path: "../dotenv.env" })
 const NodeCache = require("node-cache");
 
-var cache = new NodeCache({ stdTTL: 7200, checkperiod: 120, deleteOnExpire: true });
+//var cache = new NodeCache({ stdTTL: 7200, checkperiod: 120, deleteOnExpire: true });
+var ids= [];
 var NameId;
 async function SearchAnime(name) {
     var values = [];
-    var caches = [];
+   // var caches = [];
     name = String(name).replace(" ", "-");
     NameId = name;
     await axios.get(`https://${process.env.WEBSITE_URL}/secure/search/${name}?limit=200`, { headers: header }).then((value) => {
@@ -17,11 +18,12 @@ async function SearchAnime(name) {
                 id: element.id,
                 _id: element._id,
             }
-            caches.push(obj);
+            ids.push(obj);
+           // caches.push(obj);
 
 
         });
-        cache.set(NameId, caches);
+        //cache.set(NameId, caches);
     })
     return values;
 }
@@ -37,7 +39,7 @@ async function FindAnimeDetail(id) {
 
 async function FindAnimeId(_id) {
     var values;
-    cache.get(NameId).forEach(element => {
+    ids.forEach(element => {
         if (element._id === _id) {
             values = element.id;
 
@@ -50,7 +52,7 @@ async function FindAnimeId(_id) {
 
 async function SearchVideoDetail(id, name, seasonNumber) {
     var values;
-    var caches = [];
+   // var caches = [];
 
     name = String(name).replace(" ", "-");
     await axios.get(`https://${process.env.WEBSITE_URL}/secure/titles/${id}?titleId=${id}&titleName=${name}&seasonNumber=${seasonNumber}&perPage=2000`, { headers: header }).then((value) => {
@@ -60,8 +62,10 @@ async function SearchVideoDetail(id, name, seasonNumber) {
                 id: element.id,
                 _id: element._id,
             }
-            caches.push(obj);
+            //caches.push(obj);
+            ids.push(obj);
         });
+        
        // cache.set(id, caches)
     })
     return values;

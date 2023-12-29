@@ -9,30 +9,30 @@ const videos = require("./files/videos");
 const builder = new addonBuilder(manifest)
 
 
-var cache = new NodeCache({ stdTTL: 7200, checkperiod: 120,deleteOnExpire:true});
+//var cache = new NodeCache({ stdTTL: 7200, checkperiod: 120,deleteOnExpire:true});
 
 builder.defineCatalogHandler(async (args) => {
     var metaData = [];
     if (args.type == "series" && args.id == "animecix") {
-        var cached = cache.has(args.extra.search);
-        if (cached) {
-            var array = cache.get(args.extra.search);
-            return Promise.resolve({ metas: array });
-        } else {
-            var anime = await search.SearchAnime(args.extra.search);
-            anime.forEach(element => {
-                metaData.push({
-                    id: element._id,
-                    type: "series",
-                    name: element.name_english,
-                    poster: element.poster,
-                    description: element.description,
-                    genres: ["Animation", "Short", "Comedy"]
-                })
-            });
-            cache.set(args.extra.search,metaData);
-            return Promise.resolve({ metas: metaData });
-        }
+        // var cached = cache.has(args.extra.search);
+        // if (cached) {
+        //     var array = cache.get(args.extra.search);
+        //     return Promise.resolve({ metas: array });
+        // } 
+        var anime = await search.SearchAnime(args.extra.search);
+        anime.forEach(element => {
+            metaData.push({
+                id: element._id,
+                type: "series",
+                name: element.name_english,
+                poster: element.poster,
+                description: element.description,
+                genres: ["Animation", "Short", "Comedy"]
+            })
+        });
+        //cache.set(args.extra.search, metaData);
+        return Promise.resolve({ metas: metaData });
+
     } else {
         return Promise.resolve({ metas: [] });
     }
@@ -42,13 +42,13 @@ var meta = [];
 builder.defineMetaHandler(async function (args) {
     var findId = await search.FindAnimeId(args.id);
     if (args.type === 'series' && args.id) {
-        var cached = cache.has(args.id);
-        if (cached) {
+        // var cached = cache.has(args.id);
+        // if (cached) {
 
-            var array = cache.get(args.id);
-            id = findId;
-            return Promise.resolve({ meta: array });
-        } else {
+        //     var array = cache.get(args.id);
+        //     id = findId;
+        //     return Promise.resolve({ meta: array });
+        // } 
             id = 0;
 
 
@@ -96,9 +96,9 @@ builder.defineMetaHandler(async function (args) {
                 });
             }
             meta.push(metaObj.videos);
-            cache.set(args.id,metaObj);
+           // cache.set(args.id, metaObj);
             return Promise.resolve({ meta: metaObj })
-        }
+        
     } else {
         // otherwise return no meta
         return Promise.resolve({ meta: {} })
@@ -122,7 +122,7 @@ builder.defineStreamHandler(async function (args) {
                     }
                     detail = obj;
                 }
-                
+
             })
 
 
