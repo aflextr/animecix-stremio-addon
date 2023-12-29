@@ -5,12 +5,13 @@ const NodeCache = require("node-cache");
 
 //var cache = new NodeCache({ stdTTL: 7200, checkperiod: 120, deleteOnExpire: true });
 var ids= [];
-var NameId;
+//var NameId;
 async function SearchAnime(name) {
+    if (ids.length>2500) {ids = [];}
     var values = [];
    // var caches = [];
     name = String(name).replace(" ", "-");
-    NameId = name;
+  //  NameId = name;
     await axios.get(`https://${process.env.WEBSITE_URL}/secure/search/${name}?limit=200`, { headers: header }).then((value) => {
         values = value.data.results;
         value.data.results.forEach(element => {
