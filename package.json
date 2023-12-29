@@ -1,10 +1,10 @@
 {
   "name": "animecix-stremio",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "",
   "main": "addon.js",
   "scripts": {
-    "start": "node ./addon.js"
+    "start": "node addon.js"
   },
   "keywords": [],
   "author": "",

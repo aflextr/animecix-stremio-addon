@@ -9,7 +9,7 @@ const videos = require("./files/videos");
 const builder = new addonBuilder(manifest)
 
 
-var cache = new NodeCache();
+var cache = new NodeCache({ stdTTL: 7200, checkperiod: 120,deleteOnExpire:true});
 
 builder.defineCatalogHandler(async (args) => {
     var metaData = [];
@@ -30,7 +30,7 @@ builder.defineCatalogHandler(async (args) => {
                     genres: ["Animation", "Short", "Comedy"]
                 })
             });
-            cache.mset([{ key: args.extra.search, val: metaData }]);
+            cache.set(args.extra.search,metaData);
             return Promise.resolve({ metas: metaData });
         }
     } else {
@@ -96,7 +96,7 @@ builder.defineMetaHandler(async function (args) {
                 });
             }
             meta.push(metaObj.videos);
-            cache.mset([{ key: args.id, val: metaObj }]);
+            cache.set(args.id,metaObj);
             return Promise.resolve({ meta: metaObj })
         }
     } else {
@@ -167,5 +167,4 @@ builder.defineStreamHandler(async function (args) {
 })
 
 serveHTTP(builder.getInterface(), { port: process.env.PORT || 7000 })
-
-//publishToCentral("https://bf17379232ce-animecix-stremio-addon.baby-beamup.club/");
+publishToCentral("https://animecix-stremio-addon.onrender.com/manifest.json");
