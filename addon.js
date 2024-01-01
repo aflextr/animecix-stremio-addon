@@ -141,13 +141,15 @@ builder.defineStreamHandler(async function (args) {
                         description: element.videoProvider + "\n" + element.size,
 
                     });
-                }
-                stream.push({
+                }else{
+                    stream.push({
                     url: element.parseUrl,
                     name: element.label + "\n" + element.subName,
                     description: element.videoProvider + "\n" + element.size,
 
                 });
+                }
+                
             } else {
                 stream.push({
                     externalUrl: element.url,

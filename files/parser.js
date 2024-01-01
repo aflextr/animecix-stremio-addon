@@ -59,7 +59,7 @@ function ParseUrlVideoProviders(url, provider) {
     var value;
     var newUrl = new URL(url);
     switch (provider) {
-        case "Sibnet":
+        case "Sibnet ":
             value = `https://video.sibnet.ru${newUrl.pathname}${newUrl.search}`
             break;
         case "Streamtape ":
@@ -68,10 +68,10 @@ function ParseUrlVideoProviders(url, provider) {
         case "Abcvideo ":
             value = `https://abcvideo.cc${newUrl.pathname}${newUrl.search}`
             break;
-        case "Vudeo":
+        case "Vudeo ":
             value = `https://vudeo.net${newUrl.pathname}${newUrl.search}`
             break;
-        case "Doodstream":
+        case "Doodstream ":
             value = `https://dood.watch${newUrl.pathname}${newUrl.search}`
             break;
         case "Cloudvideo ":
@@ -79,6 +79,18 @@ function ParseUrlVideoProviders(url, provider) {
             break;
         case "Uqload":
             value = `https://uqload.com${newUrl.pathname}${newUrl.search}`
+            break;
+        case "Voe":
+            value = `https://voe.sx${newUrl.pathname}${newUrl.search}`
+            break;
+        case "Mail ":
+            value = `https://my.mail.ru${newUrl.pathname}${newUrl.search}`
+            break;
+        case "Ok ":
+            value = `https://odnoklassniki.ru${newUrl.pathname}${newUrl.search}`
+            break;
+        case "Dailymotion ":
+            value = `https://www.dailymotion.com${newUrl.pathname}${newUrl.search}`
             break;
 
         default:

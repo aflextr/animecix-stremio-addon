@@ -6,9 +6,14 @@ require("dotenv").config({ path: "../dotenv.env" });
 
 async function GetVideos(id, episode, season) {
     var values = [];
-    await axios.get(`https://${process.env.WEBSITE_URL}/secure/episode-videos?titleId=${id}&episode=${episode}&season=${season}`, { headers: header }).then((value) => {
+    if (id>0 && episode>0 && season>0) {
+        await axios.get(`https://${process.env.WEBSITE_URL}/secure/episode-videos?titleId=${id}&episode=${episode}&season=${season}`, { headers: header }).then((value) => {
         values = value.data;
+    }).catch(()=>{
+        GetVideos(id,episode,season)
     })
+    }
+    
     return values;
 }
 
@@ -60,11 +65,16 @@ async function ParseVideo(list) {
 
 async function TauVideoApi(url) {
     var values = [];
-    var code = String(url).replace(`https://i7461752d766964656fo78797az.oszar.com/embed/`, "");
-    url = `https://i7461752d766964656fo78797az.oszar.com/api/video/${code}`;
-    await axios.get(url, { headers: header} ).then((value) => {
-        values = value.data;
-    })
+    if (url.length>0) {
+        var code = String(url).replace(`https://i7461752d766964656fo78797az.oszar.com/embed/`, "");
+        url = `https://i7461752d766964656fo78797az.oszar.com/api/video/${code}`;
+        await axios.get(url, { headers: header} ).then((value) => {
+            values = value.data;
+        }).catch(()=>{
+            TauVideoApi(url);
+        })  
+    }
+    
     return values;
 }
 
