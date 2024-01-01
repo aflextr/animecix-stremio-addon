@@ -112,22 +112,20 @@ builder.defineStreamHandler(async function (args) {
     if (args.type === 'series' && args.id) {
 
         var detail = {};
-        for (let index = 0; index < meta.length; index++) {
-            meta[index].forEach((element) => {
-                if (element.id === args.id) {
-                    const obj = {
-                        id: element.id,
-                        season: element.season,
-                        episode: element.episode,
-                    }
-                    detail = obj;
-                }
+        for (let metaItem of meta) {
+            for (let element of metaItem) {
+              if (element.id === args.id) {
+                const obj = {
+                  id: element.id,
+                  season: element.season,
+                  episode: element.episode,
+                };
+                detail = obj;
+              }
+            }
+          }
+          
 
-            })
-
-
-
-        }
         var stream = [];
         var getVideo = await videos.GetVideos(id, detail.episode, detail.season);
         var streamLinks = await videos.ParseVideo(getVideo);
