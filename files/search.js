@@ -1,30 +1,19 @@
 const axios = require("axios").default;
 const header = require("../header");
 require("dotenv").config({ path: "../dotenv.env" })
-const NodeCache = require("node-cache");
 
-//var cache = new NodeCache({ stdTTL: 7200, checkperiod: 120, deleteOnExpire: true });
-var ids = [];
-//var NameId;
+
+
 async function SearchAnime(name) {
-    if (ids.length > 2500) { ids = []; }
     var values = [];
-    // var caches = [];
     name = String(name).replace(" ", "-");
-    //  NameId = name;
     await axios.get(`https://${process.env.WEBSITE_URL}/secure/search/${name}?limit=200`, { headers: header }).then((value) => {
+
+        for (let i = 0; i < value.data.results.length; i++) {
+            value.data.results[i].id = "0" + value.data.results[i].id;
+
+        }
         values = value.data.results;
-        value.data.results.forEach(element => {
-            const obj = {
-                id: element.id,
-                _id: element._id,
-            }
-            ids.push(obj);
-            // caches.push(obj);
-
-
-        });
-        //cache.set(NameId, caches);
     })
     return values;
 }
@@ -43,16 +32,17 @@ async function FindAnimeDetail(id) {
     return values;
 }
 
-async function FindAnimeId(_id) {
+async function FindAnimeId(name, _id) {
     var values;
-    ids.forEach(element => {
-        if (element._id === _id) {
-            values = element.id;
-
+    name = String(name).replace(" ", "-");
+    await axios.get(`https://${process.env.WEBSITE_URL}/secure/search/${name}?limit=200`, { headers: header }).then((value) => {
+        for (const element of value.data.results) {
+            if (element._id === _id) {
+                values = element.id;
+            }
         }
-    });
 
-
+    })
     return values;
 }
 
@@ -62,19 +52,12 @@ async function SearchVideoDetail(id, name, seasonNumber) {
     if (id > 0 && name.length > 0 && seasonNumber > 0) {
         name = String(name).replace(" ", "-");
         await axios.get(`https://${process.env.WEBSITE_URL}/secure/titles/${id}?titleId=${id}&titleName=${name}&seasonNumber=${seasonNumber}&perPage=2000`, { headers: header }).then((value) => {
+            for (let i = 0; i < value.data.title.season.episodePagination.data.length; i++) {
+                value.data.title.season.episodePagination.data[i].id = "0" + value.data.title.season.episodePagination.data[i].id
+            }
             values = value.data.title.season.episodePagination.data;
-            values.forEach(element => {
-                const obj = {
-                    id: element.id,
-                    _id: element._id,
-                }
-                //caches.push(obj);
-                ids.push(obj);
-            });
-
-            // cache.set(id, caches)
-        }).catch(()=>{
-            SearchVideoDetail(id,name,seasonNumber);
+        }).catch(() => {
+            SearchVideoDetail(id, name, seasonNumber);
         })
     }
     return values;

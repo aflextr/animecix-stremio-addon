@@ -45,6 +45,9 @@ function ParseUrlTAU(url) {
         case "i696c74617532o6f6e6c696e65z.oszar.com":
             values = "iltau2.online";
             break;
+        case "i777777o6261636b626c617a65o636f6dz.oszar.com":
+            values = "ictau2.site";
+            break;
         case "i6c69752d7a69636875616eo73697465z.oszar.com":
             values = "liu-zichuan.site";
             break;
@@ -58,43 +61,30 @@ function ParseUrlTAU(url) {
 function ParseUrlVideoProviders(url, provider) {
     var value;
     var newUrl = new URL(url);
-    switch (provider) {
-        case "Sibnet ":
-            value = `https://video.sibnet.ru${newUrl.pathname}${newUrl.search}`
-            break;
-        case "Streamtape ":
-            value = `https://streamtape.com${newUrl.pathname}${newUrl.search}`
-            break;
-        case "Abcvideo ":
-            value = `https://abcvideo.cc${newUrl.pathname}${newUrl.search}`
-            break;
-        case "Vudeo ":
-            value = `https://vudeo.net${newUrl.pathname}${newUrl.search}`
-            break;
-        case "Doodstream ":
-            value = `https://dood.watch${newUrl.pathname}${newUrl.search}`
-            break;
-        case "Cloudvideo ":
-            value = `https://cloudvideo.tv${newUrl.pathname}${newUrl.search}`
-            break;
-        case "Uqload":
-            value = `https://uqload.com${newUrl.pathname}${newUrl.search}`
-            break;
-        case "Voe":
-            value = `https://voe.sx${newUrl.pathname}${newUrl.search}`
-            break;
-        case "Mail ":
-            value = `https://my.mail.ru${newUrl.pathname}${newUrl.search}`
-            break;
-        case "Ok ":
-            value = `https://odnoklassniki.ru${newUrl.pathname}${newUrl.search}`
-            break;
-        case "Dailymotion ":
-            value = `https://www.dailymotion.com${newUrl.pathname}${newUrl.search}`
-            break;
+    if (provider === "Sibnet" || provider === "Sibnet ") {
+        value = `https://video.sibnet.ru${newUrl.pathname}${newUrl.search}`;
+    } else if (provider === "Streamtape" || provider === "Streamtape ") {
+        value = `https://streamtape.com${newUrl.pathname}${newUrl.search}`;
+    } else if (provider === "Abcvideo" || provider === "Abcvideo ") {
+        value = `https://abcvideo.cc${newUrl.pathname}${newUrl.search}`;
+    } else if (provider === "Vudeo" || provider === "Vudeo ") {
+        value = `https://vudeo.net${newUrl.pathname}${newUrl.search}`;
+    } else if (provider === "Doodstream" || provider === "Doodstream ") {
+        value = `https://dood.watch${newUrl.pathname}${newUrl.search}`;
+    } else if (provider === "Cloudvideo" || provider === "Cloudvideo ") {
+        value = `https://cloudvideo.tv${newUrl.pathname}${newUrl.search}`;
+    } else if (provider === "Uqload" || provider === "Uqload ") {
+        value = `https://uqload.com${newUrl.pathname}${newUrl.search}`;
+    } else if (provider === "Voe" || provider === "Voe ") {
+        value = `https://voe.sx${newUrl.pathname}${newUrl.search}`;
+    } else if (provider === "Mail" || provider === "Mail ") {
+        value = `https://my.mail.ru${newUrl.pathname}${newUrl.search}`;
+    } else if (provider === "Ok" || provider === "Ok ") {
+        value = `https://odnoklassniki.ru${newUrl.pathname}${newUrl.search}`;
+    } else if (provider === "Dailymotion" || provider === "Dailymotion ") {
+        value = `https://www.dailymotion.com${newUrl.pathname}${newUrl.search}`;
+    } else {
 
-        default:
-            break;
     }
     return value;
 }

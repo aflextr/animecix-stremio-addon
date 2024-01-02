@@ -8,55 +8,48 @@ const videos = require("./files/videos");
 
 const builder = new addonBuilder(manifest)
 
+//clear meta in 4 hours
+setInterval(()=>{
+    meta = []
+},14400000)
 
-//var cache = new NodeCache({ stdTTL: 7200, checkperiod: 120,deleteOnExpire:true});
+
+const CACHE_MAX_AGE = 1 * 60 * 60; // 1 hours in seconds
+
+
+
 
 builder.defineCatalogHandler(async (args) => {
     var metaData = [];
     if (args.type == "series" && args.id == "animecix") {
-        // var cached = cache.has(args.extra.search);
-        // if (cached) {
-        //     var array = cache.get(args.extra.search);
-        //     return Promise.resolve({ metas: array });
-        // } 
         var anime = await search.SearchAnime(args.extra.search);
-        anime.forEach(element => {
+
+        for (const element of anime) {
             metaData.push({
-                id: element._id,
+                id: element.id,
                 type: "series",
                 name: element.name_english,
                 poster: element.poster,
                 description: element.description,
                 genres: ["Animation", "Short", "Comedy"]
             })
-        });
-        //cache.set(args.extra.search, metaData);
+        }
         return Promise.resolve({ metas: metaData });
 
     } else {
         return Promise.resolve({ metas: [] });
     }
 })
-var id;
 var meta = [];
 builder.defineMetaHandler(async function (args) {
-    var findId = await search.FindAnimeId(args.id);
+    
+    var findId = String(args.id).substring(1);
     if (args.type === 'series' && args.id) {
-        // var cached = cache.has(args.id);
-        // if (cached) {
-
-        //     var array = cache.get(args.id);
-        //     id = findId;
-        //     return Promise.resolve({ meta: array });
-        // } 
-            id = 0;
-
 
             var find = await search.FindAnimeDetail(findId);
 
-
             var metaObj = {
-                id: find._id,
+                id: args.id,
                 type: 'series',
                 name: find.name_english,
                 background: find.backdrop,
@@ -72,8 +65,6 @@ builder.defineMetaHandler(async function (args) {
 
             }
 
-            id = find.id;
-
             // anime türü
             find.genres.forEach(element => {
                 metaObj.genres.push(element.display_name)
@@ -83,7 +74,8 @@ builder.defineMetaHandler(async function (args) {
                 var animeler = await search.SearchVideoDetail(findId, find.name_english, i + 1);
                 animeler.forEach(element => {
                     metaObj.videos.push({
-                        id: element._id,
+                        id: element.id,
+                        _id:findId,
                         type: "series",
                         title: element.name,
                         released: new Date(element.release_date),
@@ -96,7 +88,7 @@ builder.defineMetaHandler(async function (args) {
                 });
             }
             meta.push(metaObj.videos);
-           // cache.set(args.id, metaObj);
+
             return Promise.resolve({ meta: metaObj })
         
     } else {
@@ -110,6 +102,7 @@ builder.defineMetaHandler(async function (args) {
 builder.defineStreamHandler(async function (args) {
 
     if (args.type === 'series' && args.id) {
+        var id = String(args.id).substring(1);
 
         var detail = {};
         for (let metaItem of meta) {
@@ -117,6 +110,7 @@ builder.defineStreamHandler(async function (args) {
               if (element.id === args.id) {
                 const obj = {
                   id: element.id,
+                  _id : element._id,
                   season: element.season,
                   episode: element.episode,
                 };
@@ -127,7 +121,7 @@ builder.defineStreamHandler(async function (args) {
           
 
         var stream = [];
-        var getVideo = await videos.GetVideos(id, detail.episode, detail.season);
+        var getVideo = await videos.GetVideos(detail._id, detail.episode, detail.season);
         var streamLinks = await videos.ParseVideo(getVideo);
 
         streamLinks.forEach(element => {
@@ -166,5 +160,5 @@ builder.defineStreamHandler(async function (args) {
     }
 })
 
-serveHTTP(builder.getInterface(), { port: process.env.PORT || 7000 })
+serveHTTP(builder.getInterface(), { port: process.env.PORT || 7000})
 publishToCentral("https://animecix-stremio-addon.onrender.com/manifest.json");
