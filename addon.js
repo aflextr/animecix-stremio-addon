@@ -24,7 +24,10 @@ builder.defineCatalogHandler(async (args) => {
     if (args.type == "series" && args.id == "animecix") {
         var anime = await search.SearchAnime(args.extra.search);
 
-        for (const element of anime) {
+        for await (const element of anime) {
+            if (element.name_english =='') {
+                element.name_english = element.name
+            }
             metaData.push({
                 id: element.id,
                 type: "series",
@@ -47,7 +50,9 @@ builder.defineMetaHandler(async function (args) {
     if (args.type === 'series' && args.id) {
 
             var find = await search.FindAnimeDetail(findId);
-
+            if (find.name_english =='') {
+                find.name_english = find.name
+            }
             var metaObj = {
                 id: args.id,
                 type: 'series',
@@ -105,8 +110,8 @@ builder.defineStreamHandler(async function (args) {
         var id = String(args.id).substring(1);
 
         var detail = {};
-        for (let metaItem of meta) {
-            for (let element of metaItem) {
+        for await (let metaItem of meta) {
+            for  await(let element of metaItem) {
               if (element.id === args.id) {
                 const obj = {
                   id: element.id,
@@ -128,14 +133,14 @@ builder.defineStreamHandler(async function (args) {
             if (element.support == "stremio") {
                 if (new URL(element.url).hostname === "tau-video.xyz") {
                     stream.push({
-                        externalUrl: element.parseUrl,
+                        url: element.parseUrl,
                         name: element.label + "\n" + element.subName,
                         description: element.videoProvider + "\n" + element.size,
 
                     });
                 }else{
                     stream.push({
-                    url: element.parseUrl,
+                    externalUrl: element.parseUrl,
                     name: element.label + "\n" + element.subName,
                     description: element.videoProvider + "\n" + element.size,
 
@@ -161,4 +166,4 @@ builder.defineStreamHandler(async function (args) {
 })
 
 serveHTTP(builder.getInterface(), { port: process.env.PORT || 7000})
-publishToCentral("https://animecix-stremio-addon.onrender.com/manifest.json");
+publishToCentral(`https://${process.env.HOST_URL}/manifest.json`);

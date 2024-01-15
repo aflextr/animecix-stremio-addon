@@ -1,7 +1,7 @@
 const manifest = {
 
     id: 'org.animecix-stremio-addon',
-    version: '1.0.6',
+    version: '1.0.7',
     
     name: 'Animecix',
     description:"Animecix'den türkçe animeleri stremionuza getirir.  Proxy Kullandığımız için eklenti yavaş çalışabilir.",
