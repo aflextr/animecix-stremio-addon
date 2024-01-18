@@ -36,41 +36,59 @@ var subs = [];
 
 builder.defineCatalogHandler(async (args) => {
     var metaData = [];
-    if (args.type == "series" && args.id == "animecix") {
-        var anime = await search.SearchAnime(args.extra.search);
 
-        for await (const element of anime) {
-            if (element.name_english == '') {
-                element.name_english = element.name
+    var anime = await search.SearchAnime(args.extra.search);
+
+    for await (const element of anime) {
+        if (element.name_english == '') {
+            element.name_english = element.name
+        }
+        if (element.type === null || element.type === '') {
+            if (element.title_type === "anime") {
+                element.title_type = "series"
             }
+            element.type = element.title_type;
+        }
+        if (args.type === element.type && args.id === 'animecix') {
+
             metaData.push({
                 id: element.id,
-                type: "series",
+                type: element.type,
                 name: element.name_english,
                 poster: element.poster,
                 description: element.description,
                 genres: ["Animation", "Short", "Comedy"]
             })
         }
-        return Promise.resolve({ metas: metaData });
-
-    } else {
-        return Promise.resolve({ metas: [] });
     }
+
+    return Promise.resolve({ metas: metaData });
+
+
 })
 
 builder.defineMetaHandler(async function (args) {
 
     var findId = String(args.id).substring(1);
-    if (args.type === 'series' && args.id) {
+    var metaObj = {};
 
-        var find = await search.FindAnimeDetail(findId);
-        if (find.name_english == '') {
-            find.name_english = find.name
+    var find = await search.FindAnimeDetail(findId);
+    if (find.name_english == '') {
+        find.name_english = find.name
+    }
+    if (find.type === null || find.type === '') {
+        if (find.title_type === "anime") {
+            find.title_type = "series"
         }
-        var metaObj = {
+        find.type = find.title_type;
+    }
+
+
+
+    if (args.type === "series" && args.id) {
+        metaObj = {
             id: args.id,
-            type: 'series',
+            type: find.type,
             name: find.name_english,
             background: find.backdrop,
             country: find.country,
@@ -84,19 +102,17 @@ builder.defineMetaHandler(async function (args) {
             posterShape: 'poster',
 
         }
-
         // anime türü
         find.genres.forEach(element => {
             metaObj.genres.push(element.display_name)
         });
-
         for (let i = 0; i < find.season_count; i++) {
-            var animeler = await search.SearchVideoDetail(findId, find.name_english, i + 1);
+            var animeler = await search.SearchVideoDetail(find.type, findId, find.name_english, i + 1);
             animeler.forEach(element => {
                 metaObj.videos.push({
                     id: element.id,
                     _id: findId,
-                    type: "series",
+                    type: find.type,
                     title: element.name,
                     released: new Date(element.release_date),
                     season: element.season_number,
@@ -111,16 +127,44 @@ builder.defineMetaHandler(async function (args) {
 
         return Promise.resolve({ meta: metaObj })
 
-    } else {
-        // otherwise return no meta
-        return Promise.resolve({ meta: {} })
+    } else if (args.type === "movie" && args.id) {
+        metaObj = {
+            id: args.id,
+            type: find.type,
+            name: find.name_english,
+            background: find.backdrop,
+            country: find.country,
+            genres: [],
+            imdbRating: find.rating,
+            description: find.description,
+            releaseInfo: find.year,
+            poster: find.poster,
+            posterShape: 'poster',
+
+        }
+        // anime türü
+        find.genres.forEach(element => {
+            metaObj.genres.push(element.display_name)
+        });
+        var animeler = await search.SearchVideoDetail(find.type, findId, find.name_english, 1);
+        var videos = [];
+        videos.push({
+            id: "0"+animeler.id,
+            _id: findId,
+            anime:animeler
+
+        });
+        meta.push(videos);
+
+        return Promise.resolve({ meta: metaObj })
+
     }
 })
 
 
 
 builder.defineStreamHandler(async function (args) {
-
+    var stream = [];
     if (args.type === 'series' && args.id) {
         var id = String(args.id).substring(1);
 
@@ -140,18 +184,25 @@ builder.defineStreamHandler(async function (args) {
         }
 
 
-        var stream = [];
+        
         var getVideo = await videos.GetVideos(detail._id, detail.episode, detail.season);
 
         var streamLinks = await videos.ParseVideo(getVideo);
         //Yapay çeviri altyazısı varsa diziye eklenir sonradan videoya eklenmek için işlenir
-        if (getVideo[0].extra === 'Yapay Çeviri' || getVideo[0].extra === '') {
-            subs.push({
-                id: args.id,
-                lang: getVideo[0].captions[0].language,
-                url: getVideo[0].captions[0].url,
-            })
+        for (const element of getVideo) {
+            if (element.extra === 'Yapay Çeviri' || element.extra === '' || element.extra === 'Yapay Çeviri ' ) {
+                if (element.name === "Tau Video" || element.name === "Tau Video ") {
+                    subs.push({
+                        id: args.id,
+                        lang: element.captions[0].language,
+                        url: element.captions[0].url,
+                    })
+                    break;
+                }
+                
+            }
         }
+        
         streamLinks.forEach(element => {
             if (element.support == "stremio") {
                 if (new URL(element.url).hostname === "tau-video.xyz") {
@@ -181,16 +232,72 @@ builder.defineStreamHandler(async function (args) {
             }
 
         });
+    } else if (args.type === 'movie' && args.id) {
+        var detail = {};
+        for await (let metaItem of meta) {
+            for await (let element of metaItem) {
+                if (element.id === args.id) {
+                    const obj = {
+                        id: element.id,
+                        _id: element._id,
+                        anime: element.anime,
+                        
+                    };
+                    detail = obj;
+                }
+            }
+        }
 
-        return Promise.resolve({ streams: stream })
-    } else {
-        // otherwise return no streams
-        return Promise.resolve({ streams: [] })
+        var streamLinks = await videos.ParseVideo(detail.anime.videos);
+        //Yapay çeviri altyazısı varsa diziye eklenir sonradan videoya eklenmek için işlenir
+        for (const element of detail.anime.videos) {
+            if (element.extra === 'Yapay Çeviri' || element.extra === ''  || element.extra === 'Yapay Çeviri ') {
+                subs.push({
+                    id: args.id,
+                    lang: element.captions[0].language,
+                    url: element.captions[0].url,
+                })
+                break;
+            }
+        }
+
+        streamLinks.forEach(element => {
+            if (element.support == "stremio") {
+                if (new URL(element.url).hostname === "tau-video.xyz") {
+
+                    stream.push({
+                        url: element.parseUrl,
+                        name: element.label + "\n" + element.subName,
+                        description: element.videoProvider + "\n" + element.size,
+
+                    });
+                } else {
+                    stream.push({
+                        externalUrl: element.parseUrl,
+                        name: element.label + "\n" + element.subName,
+                        description: element.videoProvider + "\n" + element.size,
+
+                    });
+                }
+
+            } else {
+                stream.push({
+                    externalUrl: element.url,
+                    name: "Animecix \n" + element.subName,
+                    description: element.videoProvider + "\n" + element.size,
+
+                });
+            }
+
+        });
     }
+
+    return Promise.resolve({ streams: stream })
+
 })
 
 builder.defineSubtitlesHandler(async (args) => {
-    for (const element of subs) {
+    for await (const element of subs) {
         if (args.id === element.id) {
             //video id bulunduktan sonra yapılacaklar
             var newUrl = "https://cdn-dot-mangacix-dotnet.gateway.web.tr" + new URL(element.url).pathname
@@ -233,14 +340,14 @@ builder.defineSubtitlesHandler(async (args) => {
 
 
                     const subtitles = {
-                        lang: element.lang + " (Yapay Çeviri)",
+                        lang: "tur",
                         url: "https://" + process.env.HOST_URL + `/subs/${args.id}/${args.id}.srt`
                     }
                     return Promise.resolve({ subtitles: [subtitles] })
                 }
             }
             const subtitle = {
-                lang: element.lang,
+                lang: "tur",
                 url: newUrl
             }
             return Promise.resolve({ subtitles: [subtitle] })
@@ -248,5 +355,5 @@ builder.defineSubtitlesHandler(async (args) => {
     }
 })
 
-serveHTTP(builder.getInterface(), { port: process.env.PORT || 7000, static: "/subs" })
+serveHTTP(builder.getInterface(), { port: process.env.PORT || 7000, static: "/subs", cacheMaxAge: CACHE_MAX_AGE })
 publishToCentral(`https://${process.env.HOST_URL}/manifest.json`);
