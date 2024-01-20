@@ -302,7 +302,7 @@ builder.defineSubtitlesHandler(async (args) => {
             //video id bulunduktan sonra yapılacaklar
             var newUrl = "https://cdn-dot-mangacix-dotnet.gateway.web.tr" + new URL(element.url).pathname
             if (Path.extname(newUrl) !== ".srt") {
-                var response = await axios.get(newUrl, { ...allowLegacyRenegotiationforNodeJsOptions, method: "GET", headers: header });
+                var response = await axios.get(newUrl, {  method: "GET", headers: header });
                 const outputExtension = '.srt'; // conversion is based on output file extension
                 const options = {
                     removeTextFormatting: true,

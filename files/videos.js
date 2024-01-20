@@ -19,7 +19,7 @@ axiosRetry(axios, { retries: 3 });
 async function GetVideos(id, episode, season) {
     var values = [];
     if (id>0 && episode>0 && season>0) {
-        await axios.get(`https://${process.env.WEBSITE_URL}/secure/episode-videos?titleId=${id}&episode=${episode}&season=${season}`, { headers: header,...allowLegacyRenegotiationforNodeJsOptions }).then((value) => {
+        await axios.get(`http://${process.env.WEBSITE_URL}/secure/episode-videos?titleId=${id}&episode=${episode}&season=${season}`, { headers: header,  }).then((value) => {
         values = value.data;
     })
     }
@@ -81,7 +81,7 @@ async function TauVideoApi(url) {
     if (url.length>0) {
         var code = String(url).replace(`https://tau-video.xyz/embed/`, "");
         url = `https://tau-video-dot-xyz.gateway.web.tr/api/video/${code}`;
-        await axios.get(url, { headers:cookie, ...allowLegacyRenegotiationforNodeJsOptions} ).then((value) => {
+        await axios.get(url, { headers:cookie,  } ).then((value) => {
             values = value.data;
         })
     }
