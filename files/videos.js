@@ -19,7 +19,7 @@ axiosRetry(axios, { retries: 3 });
 async function GetVideos(id, episode, season) {
     var values = [];
     if (id>0 && episode>0 && season>0) {
-        await axios.get(`http://${process.env.WEBSITE_URL}/secure/episode-videos?titleId=${id}&episode=${episode}&season=${season}`, { headers: header,  }).then((value) => {
+        await axios.get(`https://${process.env.WEBSITE_URL}/secure/episode-videos?titleId=${id}&episode=${episode}&season=${season}`, {...allowLegacyRenegotiationforNodeJsOptions, headers: header  }).then((value) => {
         values = value.data;
     })
     }
