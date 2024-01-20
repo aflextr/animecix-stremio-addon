@@ -81,7 +81,7 @@ async function TauVideoApi(url) {
     if (url.length>0) {
         var code = String(url).replace(`https://tau-video.xyz/embed/`, "");
         url = `https://tau-video-dot-xyz.gateway.web.tr/api/video/${code}`;
-        await axios.get(url, { headers:cookie,  } ).then((value) => {
+        await axios.get(url, {...allowLegacyRenegotiationforNodeJsOptions, headers:cookie  } ).then((value) => {
             values = value.data;
         })
     }
