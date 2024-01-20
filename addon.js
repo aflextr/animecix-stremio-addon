@@ -356,4 +356,4 @@ builder.defineSubtitlesHandler(async (args) => {
 })
 
 serveHTTP(builder.getInterface(), { port: process.env.PORT || 7000, static: "/subs" })
-publishToCentral(`https://${process.env.HOST_URL}/manifest.json`);
+//publishToCentral(`https://${process.env.HOST_URL}/manifest.json`);
