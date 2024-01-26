@@ -7,8 +7,6 @@ const videos = require("./files/videos");
 const Path = require("path");
 const header = require('./header');
 const axios = require("axios").default;
-const crypto = require("crypto");
-const https = require("https");
 const fs = require('fs')
 const subsrt = require('subtitle-converter');
 
@@ -19,14 +17,6 @@ var subs = [];
 
 
 
-const allowLegacyRenegotiationforNodeJsOptions = {
-    httpsAgent: new https.Agent({
-        // for self signed you could also add
-        // rejectUnauthorized: false,
-        // allow legacy server
-        secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
-    }),
-};
 const builder = new addonBuilder(manifest)
 
 //clear meta in 48 hours
@@ -40,7 +30,9 @@ setInterval(() => {
 
 builder.defineCatalogHandler(async (args) => {
     var metaData = [];
-
+    if (!args.extra.search.includes("animecix")) {
+        return Promise.resolve({ metas: [] });
+    }
     var anime = await search.SearchAnime(args.extra.search);
 
     for await (const element of anime) {
@@ -308,7 +300,7 @@ builder.defineSubtitlesHandler(async (args) => {
             //video id bulunduktan sonra yapılacaklar
             var newUrl = `https://${process.env.SUBTITLEAI_URL}` + new URL(element.url).pathname
             if (Path.extname(newUrl) !== ".srt") {
-                var response = await axios.get(newUrl, {...allowLegacyRenegotiationforNodeJsOptions,  method: "GET", headers: header });
+                var response = await axios.get(newUrl, {  method: "GET", headers: header });
                 const outputExtension = '.srt'; // conversion is based on output file extension
                 const options = {
                     removeTextFormatting: true,
@@ -361,15 +353,7 @@ builder.defineSubtitlesHandler(async (args) => {
     }
 })
 
-const router = getRouter(builder.getInterface())
-
-require('http').createServer((req, res) => {
-  router(req, res, () => {
-    
-    res.statusCode = 200
-    res.end()
-  })
-}).listen(process.env.PORT)
+serveHTTP(builder.getInterface(), { port: process.env.PORT || 7000, static: "/subs",cacheMaxAge:CACHE_MAX_AGE })
 
 
 

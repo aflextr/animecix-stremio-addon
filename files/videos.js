@@ -2,24 +2,16 @@ const axiosRetry = require('axios-retry').default;
 const axios = require("axios").default;
 const header = require("../header");
 const Parser = require("../files/parser");
-const crypto = require("crypto");
-const https = require("https");
+;
 require("dotenv").config({ path: "../.env" });
 
-const allowLegacyRenegotiationforNodeJsOptions = {
-    httpsAgent: new https.Agent({
-      // for self signed you could also add
-      // rejectUnauthorized: false,
-      // allow legacy server
-      secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
-    }),
-  };
+
 axiosRetry(axios, { retries: 3 });
 
 async function GetVideos(id, episode, season) {
     var values = [];
     if (id>0 && episode>0 && season>0) {
-        await axios.get(`https://${process.env.PROXY_URL}/secure/episode-videos?titleId=${id}&episode=${episode}&season=${season}`, {...allowLegacyRenegotiationforNodeJsOptions, headers: header  }).then((value) => {
+        await axios.get(`https://${process.env.PROXY_URL}/secure/episode-videos?titleId=${id}&episode=${episode}&season=${season}`, { headers: header  }).then((value) => {
         values = value.data;
     })
     }
@@ -78,7 +70,7 @@ async function TauVideoApi(url) {
     if (url.length>0) {
         var code = String(url).replace(`https://i7461752d766964656fo78797az.oszar.com/embed/`, "");
         url = `https://i7461752d766964656fo78797az.oszar.com/api/video/${code}`;
-        await axios.get(url, {...allowLegacyRenegotiationforNodeJsOptions, headers:header  } ).then((value) => {
+        await axios.get(url, { headers:header  } ).then((value) => {
             values = value.data;
         })
     }

@@ -4,7 +4,7 @@ const manifest = {
     version: '1.1.0',
 
     name: 'Animecix',
-    description: "Animecix'den türkçe animeleri stremionuza getirir.  Proxy Kullandığımız için eklenti yavaş çalışabilir.",
+    description: "Animecix'den türkçe animeleri stremionuza getirir.  Proxy Kullandığımız için eklenti yavaş çalışabilir. Arama yerinin en sonuna animecix yazarsanız çalışır.",
     contactEmail: "eyup.elitass@gmail.com",
     logo: "https://animecix.net/storage/branding_media/myZDSpWRkH8K7PGgb4vQlnhO1wGe3fT3mRsCveIe.png",
     background: "https://play-lh.googleusercontent.com/5y8mo10uB4LrE_zOY672TKFELOFXWWpLQDU9zJ_JiU4ftj5VNGIH3BH7Jzf-yXqFtb0",
