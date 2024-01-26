@@ -1,5 +1,5 @@
-const { addonBuilder, serveHTTP, publishToCentral } = require('stremio-addon-sdk')
-require("dotenv").config({ path: "./dotenv.env" })
+const { addonBuilder, serveHTTP, publishToCentral,getRouter } = require('stremio-addon-sdk')
+require("dotenv").config({ path: "./.env" })
 const search = require("./files/search")
 const manifest = require("./manifest");
 const NodeCache = require("node-cache");
@@ -12,6 +12,13 @@ const https = require("https");
 const fs = require('fs')
 const subsrt = require('subtitle-converter');
 
+
+const CACHE_MAX_AGE = 24 * 60 * 60; // 24 hours in seconds
+var meta = [];
+var subs = [];
+
+
+
 const allowLegacyRenegotiationforNodeJsOptions = {
     httpsAgent: new https.Agent({
         // for self signed you could also add
@@ -22,16 +29,13 @@ const allowLegacyRenegotiationforNodeJsOptions = {
 };
 const builder = new addonBuilder(manifest)
 
-//clear meta in 4 hours
+//clear meta in 48 hours
 setInterval(() => {
     meta = [];
     subs = [];
-}, 14400000)
+}, 172800000) 
 
 
-const CACHE_MAX_AGE = 1 * 60 * 60; // 1 hours in seconds
-var meta = [];
-var subs = [];
 
 
 builder.defineCatalogHandler(async (args) => {
@@ -66,7 +70,6 @@ builder.defineCatalogHandler(async (args) => {
 
 
 })
-
 builder.defineMetaHandler(async function (args) {
 
     var findId = String(args.id).substring(1);
@@ -167,8 +170,11 @@ builder.defineStreamHandler(async function (args) {
     var stream = [];
     if (args.type === 'series' && args.id) {
         var id = String(args.id).substring(1);
-
+       
         var detail = {};
+        if (meta.length ==0) {
+           
+        }
         for await (let metaItem of meta) {
             for await (let element of metaItem) {
                 if (element.id === args.id) {
@@ -205,7 +211,7 @@ builder.defineStreamHandler(async function (args) {
         
         streamLinks.forEach(element => {
             if (element.support == "stremio") {
-                if (new URL(element.url).hostname === "tau-video.xyz") {
+                if (new URL(element.url).hostname === "i7461752d766964656fo78797az.oszar.com") {
 
                     stream.push({
                         url: element.parseUrl,
@@ -263,7 +269,7 @@ builder.defineStreamHandler(async function (args) {
 
         streamLinks.forEach(element => {
             if (element.support == "stremio") {
-                if (new URL(element.url).hostname === "tau-video.xyz") {
+                if (new URL(element.url).hostname === "i7461752d766964656fo78797az.oszar.com") {
 
                     stream.push({
                         url: element.parseUrl,
@@ -300,7 +306,7 @@ builder.defineSubtitlesHandler(async (args) => {
     for await (const element of subs) {
         if (args.id === element.id) {
             //video id bulunduktan sonra yapılacaklar
-            var newUrl = "https://cdn-dot-mangacix-dotnet.gateway.web.tr" + new URL(element.url).pathname
+            var newUrl = `https://${process.env.SUBTITLEAI_URL}` + new URL(element.url).pathname
             if (Path.extname(newUrl) !== ".srt") {
                 var response = await axios.get(newUrl, {...allowLegacyRenegotiationforNodeJsOptions,  method: "GET", headers: header });
                 const outputExtension = '.srt'; // conversion is based on output file extension
@@ -341,7 +347,7 @@ builder.defineSubtitlesHandler(async (args) => {
 
                     const subtitles = {
                         lang: "tur",
-                        url: "https://" + process.env.HOST_URL + `/subs/${args.id}/${args.id}.srt`
+                        url: "https://" + process.env.HOSTING_URL + `/subs/${args.id}/${args.id}.srt`
                     }
                     return Promise.resolve({ subtitles: [subtitles] })
                 }
@@ -355,5 +361,16 @@ builder.defineSubtitlesHandler(async (args) => {
     }
 })
 
-serveHTTP(builder.getInterface(), { port: process.env.PORT || 7000, static: "/subs" })
-//publishToCentral(`https://${process.env.HOST_URL}/manifest.json`);
+const router = getRouter(builder.getInterface())
+
+require('http').createServer((req, res) => {
+  router(req, res, () => {
+    
+    res.statusCode = 200
+    res.end()
+  })
+}).listen(process.env.PORT)
+
+
+
+//publishToCentral(`https://${process.env.HOSTING_URL}/manifest.json`);

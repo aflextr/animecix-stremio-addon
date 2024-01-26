@@ -1,10 +1,13 @@
+require("dotenv").config({path:"./.env"})
 const header = {
 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
 "Accept-Encoding": "gzip, deflate, br",
 "Accept-Language": "tr,en;q=0.9,en-GB;q=0.8,en-US;q=0.7",
 "Cache-Control": "max-age=0",
 "Connection": "keep-alive",
-"Cookie": "connect.sid=s%3APFIYlZ3_tpaStMPA7qLJRvL7gWktN2ty.LQ5k0s%2BLLAhPjOh8eXRbVig%2BVwjC3VgzxYbCnjo3kyM; animecix_net=%7B%22HttpHost%22%3A%22animecix.net%22%2C%22Protokol%22%3A%22https%22%2C%22Port%22%3A443%2C%22KulAdSifre%22%3Anull%2C%22UrlAdresi%22%3A%22%5C%2F%22%2C%22GetVeri%22%3Anull%2C%22GitOpjeId%22%3Anull%2C%22DnsAdresi%22%3A0%2C%22URL_Adresi%22%3A%22https%3A%5C%2F%5C%2Fanimecix.net%5C%2F%22%2C%22GirisIP%22%3A%22104.26.8.126%22%7D; YoncuKoruma=149.86.128.83; OsSavSec-v1=C51F2F1106C5231ED099A604F0C7292D; __Secure-YoncuSec=C51F2F1106C5231ED099A604F0C7292D; __Host-YoncuSec=C51F2F1106C5231ED099A604F0C7292D; theme=Dark",
+"Cookie": "animecix_net=%7B%22HttpHost%22%3A%22animecix.net%22%2C%22HttpDomain%22%3A%22animecix.net%22%2C%22Protokol%22%3A%22http%22%2C%22Port%22%3A80%2C%22KulAdSifre%22%3Anull%2C%22UrlAdresi%22%3A%22%5C%2F%22%2C%22GetVeri%22%3Anull%2C%22GitOpjeId%22%3Anull%2C%22DnsAdresi%22%3A0%2C%22URL_Adresi%22%3A%22http%3A%5C%2F%5C%2Fanimecix.net%5C%2F%22%2C%22GirisIP%22%3A%22172.67.72.143%22%7D; cf_clearance=Xa69PwVJNuscWkCIenXwQiOEoOVrJlKdCPEynF1VGXc-1706283440-1-Aa3VY6XtytKyoQRw1nf6nKxUWpLwZ+r9l/cJA7mPOi3sxRGWzSlj64iUY9NMXkY+oFwSngzfU5CCyPtP3BIz87s=; theme=Dark;",
+"Referer":`https://${process.env.PROXY_URL}/`,
+
 "Sec-Fetch-Dest": "document",
 "Sec-Fetch-Mode": "navigate",
 "Sec-Fetch-Site": "none",
