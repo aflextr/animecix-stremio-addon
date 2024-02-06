@@ -31,7 +31,7 @@ setInterval(() => {
 
 builder.defineCatalogHandler(async (args) => {
     var metaData = [];
-    if (!args.extra.search.includes("animecix") || !args.extra.search.includes("ax") || !args.extra.search.includes("ac") ) {
+    if (!args.extra.search.includes("animecix") && !args.extra.search.includes("ax") && !args.extra.search.includes("ac") ) {
         return Promise.resolve({ metas: [] });
     }
     var anime = await search.SearchAnime(args.extra.search);
