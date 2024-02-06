@@ -18,19 +18,20 @@ var subs = [];
 
 
 const builder = new addonBuilder(manifest)
-
-//clear meta in 48 hours
+//20 days
+var clearData = 1728000000;
+//clear meta in clearData veriable hours
 setInterval(() => {
     meta = [];
     subs = [];
-}, 172800000) 
+}, clearData) 
 
 
 
 
 builder.defineCatalogHandler(async (args) => {
     var metaData = [];
-    if (!args.extra.search.includes("animecix")) {
+    if (!args.extra.search.includes("animecix" || "ax" || "ac")) {
         return Promise.resolve({ metas: [] });
     }
     var anime = await search.SearchAnime(args.extra.search);
