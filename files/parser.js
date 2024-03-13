@@ -48,8 +48,14 @@ function ParseUrlTAU(url) {
         case "i777777o6261636b626c617a65o636f6dz.oszar.com":
             values = "ictau2.site";
             break;
+        case "i697274617531o6f6e6c696e65z.oszar.com":
+            values = "irtau1.online";
+            break;
         case "i6c69752d7a69636875616eo73697465z.oszar.com":
             values = "liu-zichuan.site";
+            break;
+        case "i777777o6261636b626c617a65o636f6dz.oszar.com":
+            values = "li-dafu.site";
             break;
         default:
             values = false;

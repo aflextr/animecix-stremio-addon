@@ -24,6 +24,7 @@ var respond = (res, data) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', '*');
     res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', `max-age=${CACHE_MAX_AGE}`)
     res.send(data);
 
 }
@@ -276,8 +277,9 @@ addon.get('/stream/:type/:id/', async function (req, res, next) {
 
                 });
             }
-
+            
         });
+        return respond(res, { streams: stream });
     } else if (type === 'movie' && id) {
         var detail = {};
         for await (let metaItem of meta) {
@@ -293,7 +295,7 @@ addon.get('/stream/:type/:id/', async function (req, res, next) {
                 }
             }
         }
-        if (detail && typeof (detail.anime.videos) !== "undefined") {
+        if (detail && typeof (detail.anime) !== "undefined") {
             var streamLinks = await videos.ParseVideo(detail.anime.videos);
             //Yapay çeviri altyazısı varsa diziye eklenir sonradan videoya eklenmek için işlenir
             for (const element of detail.anime.videos) {
