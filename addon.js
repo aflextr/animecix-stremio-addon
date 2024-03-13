@@ -20,7 +20,7 @@ var subs = [];
 
 
 var respond = (res, data) => {
-    
+
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', '*');
     res.setHeader('Content-Type', 'application/json');
@@ -30,7 +30,7 @@ var respond = (res, data) => {
 
 
 
-addon.use("/subs",express.static("subs"));
+addon.use("/subs", express.static("subs"));
 
 addon.get('/manifest.json', function (req, res) {
     respond(res, manifest);
@@ -40,15 +40,15 @@ addon.get('/', function (req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', '*');
     res.setHeader('Content-Type', 'text/html');
-    var indexPage = fs.readFileSync(path.join(__dirname,"indexPage.html"))
+    var indexPage = fs.readFileSync(path.join(__dirname, "indexPage.html"))
 
     res.send(indexPage);
 });
 
 addon.get('/configure', function (req, res) {
     return res.redirect("/")
-  });
-  
+});
+
 
 
 //20 days
@@ -61,19 +61,19 @@ setInterval(() => {
 
 addon.param('type', function (req, res, next, val) {
     if (manifest.types.includes(val)) {
-      next();
+        next();
     } else {
-      next("Unsupported type " + val);
+        next("Unsupported type " + val);
     }
-  });
-  
+});
+
 
 
 addon.get('/catalog/:type/:id/search=:search', async function (req, res, next) {
-    var {type,id} = req.params;
+    var { type, id } = req.params;
     var Search = req.params.search;
-    Search = String(Search).replace(".json","");
-    
+    Search = String(Search).replace(".json", "");
+
     var metaData = [];
     if (!Search.includes("animecix") && !Search.includes("ax") && !Search.includes("ac")) {
         return respond(res, { metas: [] });
@@ -109,10 +109,10 @@ addon.get('/catalog/:type/:id/search=:search', async function (req, res, next) {
 
 
 addon.get('/meta/:type/:id/', async function (req, res, next) {
-    var {type,id} = req.params;
-    id = String(id).replace(".json","");
+    var { type, id } = req.params;
+    id = String(id).replace(".json", "");
     var findId = String(id).substring(1);
-    
+
     var metaObj = {};
 
     var find = await search.FindAnimeDetail(findId);
@@ -154,13 +154,13 @@ addon.get('/meta/:type/:id/', async function (req, res, next) {
             animeler.forEach(element => {
                 metaObj.videos.push({
                     id: element.id,
-                    _id:findId,
+                    _id: findId,
                     title: element.name,
                     released: new Date(element.release_date),
                     season: element.season_number,
                     episode: element.episode_number,
                     overview: element.description,
-                    thumbnail:element.poster
+                    thumbnail: element.poster
                 });
             });
         }
@@ -187,7 +187,7 @@ addon.get('/meta/:type/:id/', async function (req, res, next) {
         find.genres.forEach(element => {
             metaObj.genres.push(element.display_name)
         });
-        var animeler = await search.SearchVideoDetail(find.type, findId, find.name_english, 1);
+        var animeler = await search.SearchVideoDetail(type, findId, find.name_english, 1);
         var videos = [];
         videos.push({
             id: "0" + animeler.id,
@@ -206,10 +206,10 @@ addon.get('/meta/:type/:id/', async function (req, res, next) {
 
 addon.get('/stream/:type/:id/', async function (req, res, next) {
     var stream = [];
-    var {type,id} = req.params;
-    id = String(id).replace(".json","");
+    var { type, id } = req.params;
+    id = String(id).replace(".json", "");
     if (type === 'series' && id) {
-       // id = String(id).substring(1);
+        // id = String(id).substring(1);
 
         var detail = {};
         if (meta.length == 0) {
@@ -293,59 +293,61 @@ addon.get('/stream/:type/:id/', async function (req, res, next) {
                 }
             }
         }
-
-        var streamLinks = await videos.ParseVideo(detail.anime.videos);
-        //Yapay çeviri altyazısı varsa diziye eklenir sonradan videoya eklenmek için işlenir
-        for (const element of detail.anime.videos) {
-            if (element.extra === 'Yapay Çeviri' || element.extra === '' || element.extra === 'Yapay Çeviri ') {
-                subs.push({
-                    id: id,
-                    lang: element.captions[0].language,
-                    url: element.captions[0].url,
-                })
-                break;
+        if (detail && typeof (detail.anime.videos) !== "undefined") {
+            var streamLinks = await videos.ParseVideo(detail.anime.videos);
+            //Yapay çeviri altyazısı varsa diziye eklenir sonradan videoya eklenmek için işlenir
+            for (const element of detail.anime.videos) {
+                if (element.extra === 'Yapay Çeviri' || element.extra === '' || element.extra === 'Yapay Çeviri ') {
+                    subs.push({
+                        id: id,
+                        lang: element.captions[0].language,
+                        url: element.captions[0].url,
+                    })
+                    break;
+                }
             }
-        }
 
-        streamLinks.forEach(element => {
-            if (element.support == "stremio") {
-                if (new URL(element.url).hostname === "i7461752d766964656fo78797az.oszar.com") {
+            streamLinks.forEach(element => {
+                if (element.support == "stremio") {
+                    if (new URL(element.url).hostname === "i7461752d766964656fo78797az.oszar.com") {
 
-                    stream.push({
-                        url: element.parseUrl,
-                        name: element.label + "\n" + element.subName,
-                        description: element.videoProvider + "\n" + element.size,
+                        stream.push({
+                            url: element.parseUrl,
+                            name: element.label + "\n" + element.subName,
+                            description: element.videoProvider + "\n" + element.size,
 
-                    });
+                        });
+                    } else {
+                        stream.push({
+                            externalUrl: element.parseUrl,
+                            name: element.label + "\n" + element.subName,
+                            description: element.videoProvider + "\n" + element.size,
+
+                        });
+                    }
+
                 } else {
                     stream.push({
-                        externalUrl: element.parseUrl,
-                        name: element.label + "\n" + element.subName,
+                        externalUrl: element.url,
+                        name: "Animecix \n" + element.subName,
                         description: element.videoProvider + "\n" + element.size,
 
                     });
                 }
 
-            } else {
-                stream.push({
-                    externalUrl: element.url,
-                    name: "Animecix \n" + element.subName,
-                    description: element.videoProvider + "\n" + element.size,
+            });
+        }
 
-                });
-            }
+        return respond(res, { streams: stream });
 
-        });
     }
 
-    return respond(res, { streams: stream });
-    
 
 })
 
 addon.get('/subtitles/:type/:id/:query?.json', async function (req, res, next) {
-    var {type,id} = req.params;
-    id = String(id).replace(".json","");
+    var { type, id } = req.params;
+    id = String(id).replace(".json", "");
     for await (const element of subs) {
         if (id === element.id) {
             //video id bulunduktan sonra yapılacaklar
@@ -354,12 +356,14 @@ addon.get('/subtitles/:type/:id/:query?.json', async function (req, res, next) {
                 var altyazi = "";
                 try {
                     var response = await axios.get(newUrl, { method: "GET", headers: header });
-                    const outputExtension = '.srt'; // conversion is based on output file extension
-                    const options = {
-                        removeTextFormatting: true,
-                    };
-                
-                    altyazi = subsrt.convert(response.data, outputExtension, options).subtitle;
+                    if (response && response.status == 200 && response.statusText == "OK") {
+                        const outputExtension = '.srt'; // conversion is based on output file extension
+                        const options = {
+                            removeTextFormatting: true,
+                        };
+
+                        altyazi = subsrt.convert(response.data, outputExtension, options).subtitle;
+                    }
                 } catch (errors) {
                     const error = {
                         lang: "altyazi yüklenemedi",
@@ -367,7 +371,7 @@ addon.get('/subtitles/:type/:id/:query?.json', async function (req, res, next) {
                     }
                     return respond(res, { subtitles: [error] });
                 }
-                
+
                 if (altyazi !== '') {
                     const folderPath = './subs/';
 
@@ -403,7 +407,7 @@ addon.get('/subtitles/:type/:id/:query?.json', async function (req, res, next) {
                         url: "https://" + process.env.HOSTING_URL + `/subs/${id}/${id}.srt`
                     }
                     return respond(res, { subtitles: [subtitles] });
-                    
+
                 }
             }
             const subtitle = {
@@ -415,10 +419,10 @@ addon.get('/subtitles/:type/:id/:query?.json', async function (req, res, next) {
     }
 })
 
-    var port = process.env.PORT || 7000;
-    addon.listen( port, function () {
-        console.log(`Add-on Repository URL: http://127.0.0.1:${port}/manifest.json`);
-    });
+var port = process.env.PORT || 7000;
+addon.listen(port, function () {
+    console.log(`Add-on Repository URL: http://127.0.0.1:${port}/manifest.json`);
+});
 
 
 
