@@ -24,7 +24,6 @@ var respond = (res, data) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', '*');
     res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', `max-age=${CACHE_MAX_AGE}`)
     res.send(data);
 
 }
@@ -53,12 +52,12 @@ addon.get('/configure', function (req, res) {
 
 
 //20 days
-var clearData = 1728000000;
+// var clearData = 1728000000;
 //clear meta in clearData veriable hours
-setInterval(() => {
-    meta = [];
-    subs = [];
-}, clearData)
+// setInterval(() => {
+//     meta = [];
+//     subs = [];
+// }, clearData)
 
 addon.param('type', function (req, res, next, val) {
     if (manifest.types.includes(val)) {
