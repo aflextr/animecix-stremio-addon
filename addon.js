@@ -71,38 +71,43 @@ addon.param('type', function (req, res, next, val) {
 
 addon.get('/catalog/:type/:id/search=:search', async function (req, res, next) {
     var { type, id } = req.params;
-    var Search = req.params.search;
-    Search = String(Search).replace(".json", "");
+    if (id == "animecix") {
+        var Search = req.params.search;
+        Search = String(Search).replace(".json", "");
 
-    var metaData = [];
-    if (!Search.includes("animecix") && !Search.includes("ax") && !Search.includes("ac")) {
+        var metaData = [];
+        if (!Search.includes("animecix") && !Search.includes("ax") && !Search.includes("ac")) {
+            return respond(res, { metas: [] });
+        }
+        var anime = await search.SearchAnime(Search);
+
+        for await (const element of anime) {
+            if (element.name_english == '') {
+                element.name_english = element.name
+            }
+            if (element.type === null || element.type === '') {
+                if (element.title_type === "anime") {
+                    element.title_type = "series"
+                }
+                element.type = element.title_type;
+            }
+            if (type === element.type && id === 'animecix') {
+
+                metaData.push({
+                    id: element.id,
+                    type: element.type,
+                    name: element.name_english,
+                    poster: element.poster,
+                    description: element.description,
+                    genres: ["Animation", "Short", "Comedy"]
+                })
+            }
+        }
+        return respond(res, { metas: metaData });
+    }else{
         return respond(res, { metas: [] });
     }
-    var anime = await search.SearchAnime(Search);
 
-    for await (const element of anime) {
-        if (element.name_english == '') {
-            element.name_english = element.name
-        }
-        if (element.type === null || element.type === '') {
-            if (element.title_type === "anime") {
-                element.title_type = "series"
-            }
-            element.type = element.title_type;
-        }
-        if (type === element.type && id === 'animecix') {
-
-            metaData.push({
-                id: element.id,
-                type: element.type,
-                name: element.name_english,
-                poster: element.poster,
-                description: element.description,
-                genres: ["Animation", "Short", "Comedy"]
-            })
-        }
-    }
-    return respond(res, { metas: metaData });
 
 
 })
@@ -276,7 +281,7 @@ addon.get('/stream/:type/:id/', async function (req, res, next) {
 
                 });
             }
-            
+
         });
         return respond(res, { streams: stream });
     } else if (type === 'movie' && id) {
