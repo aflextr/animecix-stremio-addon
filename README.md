@@ -1,8 +1,4 @@
----
-runme:
-  id: 01HSKT0P7365CE70JETP78ZWMW
-  version: v3
----
+
 
 # Animecix-Stremio-Addon
 
