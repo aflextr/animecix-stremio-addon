@@ -4,7 +4,7 @@ const manifest = {
     version: '1.1.2',
 
     name: 'Animecix',
-    description: "Animecix'den türkçe animeleri stremionuza getirir.  Proxy Kullandığımız için eklenti yavaş çalışabilir. Arama yerinin en sonuna animecix yazarsanız çalışır.\n <a target='_blank' href='https://github.com/aflextr/animecix-stremio-addon'>GitHub</a>",
+    description: "Animecix'den türkçe animeleri stremionuza getirir.  Proxy Kullandığımız için eklenti yavaş çalışabilir. Arama yerinin en sonuna animecix yada ax veyahut ac yazarsanız çalışır.\n <a target='_blank' href='https://github.com/aflextr/animecix-stremio-addon'>GitHub</a>",
     contactEmail: "eyup.elitass@gmail.com",
     logo: "/files/images/animecix.png",
     background: "/files/images/background.png",

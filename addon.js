@@ -382,10 +382,10 @@ builder.defineSubtitlesHandler(async (args) => {
 
                         fs.writeFileSync(`./files/subs/${id}/${id}.srt`, altyazi, { encoding: "utf8" });
 
-
+                        newUrl = "https://" + process.env.HOSTING_URL + `/subs/${id}/${id}.srt`;
                         const subtitles = {
                             lang: "tur",
-                            url: "https://" + process.env.HOSTING_URL + `/subs/${id}/${id}.srt`
+                            url: newUrl
                         }
                         return Promise.resolve({ subtitles: [subtitles] })
 
