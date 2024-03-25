@@ -1,7 +1,7 @@
 const axiosRetry = require('axios-retry').default;
 const axios = require("axios").default;
 const header = require("../header");
-const Parser = require("../files/parser");
+const Parser = require("./parser");
 ;
 require("dotenv").config({ path: "../.env" });
 

@@ -1,13 +1,13 @@
 const manifest = {
 
     id: 'org.animecix-stremio-addon',
-    version: '1.1.1',
+    version: '1.1.2',
 
     name: 'Animecix',
-    description: "Animecix'den türkçe animeleri stremionuza getirir.  Proxy Kullandığımız için eklenti yavaş çalışabilir. Arama yerinin en sonuna animecix yazarsanız çalışır.",
+    description: "Animecix'den türkçe animeleri stremionuza getirir.  Proxy Kullandığımız için eklenti yavaş çalışabilir. Arama yerinin en sonuna animecix yazarsanız çalışır.\n <a target='_blank' href='https://github.com/aflextr/animecix-stremio-addon'>GitHub</a>",
     contactEmail: "eyup.elitass@gmail.com",
-    logo: "https://animecix.net/storage/branding_media/myZDSpWRkH8K7PGgb4vQlnhO1wGe3fT3mRsCveIe.png",
-    background: "https://play-lh.googleusercontent.com/5y8mo10uB4LrE_zOY672TKFELOFXWWpLQDU9zJ_JiU4ftj5VNGIH3BH7Jzf-yXqFtb0",
+    logo: "/files/images/animecix.png",
+    background: "/files/images/background.png",
     behaviorHints: {
         configurable: true,
         configurationRequired: false,
